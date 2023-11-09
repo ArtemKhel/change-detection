@@ -1,9 +1,7 @@
 import logging
 
-import matplotlib.pyplot as plt
 import numpy as np
 
-# from src.data_generation import Square_Wave, Saw_Wave, Triangle_Wave, VaryingAmplitudeNoise
 
 logger = logging.getLogger('asdf')
 
@@ -32,7 +30,6 @@ class KLIEP:
         if sigma is None:
             sigma = self.sigma
 
-        n_ref = Y_ref.shape[0]
         n_test = Y_test.shape[0]
 
         K = self.calculate_K(Y_test, sigma)
@@ -57,8 +54,6 @@ class KLIEP:
         return w_hat
 
     def likelihood_cross_validation(self, Y_ref, Y_test):
-        # TODO: doesn't work?
-        n_ref = Y_ref.shape[0]
         n_test = Y_test.shape[0]
         R = 4  # TODO: <--
         j_scores = dict()
@@ -112,8 +107,7 @@ class KLIEP:
     def update_alpha(self):
         c = sum([self.alpha[i] * self.calculate_K_sigma(self.Y_test[-1], self.Y_test[i]) for i in range(self.n_test)])
 
-        self.alpha = np.append(self.alpha[1:] * (1 - self.eta * self.lambda_), self.eta / c)  # TODO: div by zero
-        # self.alpha = np.append(self.alpha[1:] * (1 - self.eta * self.lambda_), c)
+        self.alpha = np.append(self.alpha[1:] * (1 - self.eta * self.lambda_), self.eta / c)
 
         b = self.calculate_b(self.Y_ref, self.Y_test)
         self.alpha += (1 - b.T * self.alpha) @ b / (b.T @ b)
@@ -138,7 +132,6 @@ class KLIEP:
             if np.abs(S) > self.mu:
                 self.step_ = True
                 self.s_history.append(np.nan)
-                # self.s_history.append(S)
                 logger.info(f'change at {self.t}')
                 self.change_points.append(self.t)
                 return True
@@ -157,7 +150,7 @@ class KLIEP:
         self.Y = Y
         self.n_ref = n_ref
         self.n_test = n_test
-        self.k = k  # TODO: <--
+        self.k = k
         self.t = 0
         size = n_test + n_ref + k
         self.s_history = [np.nan] * (size)
@@ -169,7 +162,6 @@ class KLIEP:
                 self.t += size
                 # TODO: np.lib.stride_tricks.sliding_window_view ?
                 M = np.array([slice_[i : i + k, :] for i in range(self.n_ref + self.n_test)])
-                # return slice_[:n_ref], slice_[n_ref:]
                 return M[: self.n_ref], M[self.n_ref : self.n_ref + self.n_test]
             else:
                 self.t += size
@@ -194,48 +186,3 @@ class KLIEP:
 
         loop()
         return self
-
-
-if __name__ == '__main__':
-    # pass
-    np.random.seed(42)
-
-    def plot(k):
-        fig, ax = plt.subplots(2, 1, figsize=(10, 6))
-        ax[0].plot(k.Y)
-        ax[1].plot(k.t_list, k.s_history)
-        ax[1].plot(k.t_list, [k.mu] * len(k.t_list), linestyle='dashed', color='m')
-        ax[1].plot(k.t_list, [-k.mu] * len(k.t_list), linestyle='dashed', color='m')
-        ax[1].set_xlim(ax[0].get_xlim())
-        ax[1].vlines(k.change_points, np.nanmin(k.s_history), np.nanmax(k.s_history), color='red')
-        ax[0].vlines(k.change_points, np.nanmin(y), np.nanmax(y), color='red')
-        plt.savefig('/tmp/fig.png')
-        # plt.show()  # k.fit(y_ref, y_test, 1)  # k.lcv(y_ref, y_test, [10 ** i for i in range(3)])
-
-    size = (200, 1)
-    y = np.concatenate(
-        (
-            np.random.normal(scale=5, size=size),
-            np.random.normal(scale=25, size=size),
-            np.random.normal(scale=5, size=size),
-            np.random.normal(scale=25, size=size),
-            # np.random.normal(loc=20, scale=5, size=size),
-            # np.random.normal(loc=40, scale=5, size=size),
-            # np.random.normal(loc=20, scale=5, size=size),
-            # np.random.normal(scale=5, size=size),
-        )
-    )
-    y = np.flip(y)
-
-    n = 20
-    n_ref = n_test = n
-    k = n
-    eta = 0.3
-    lambda_ = 0.1
-    mu = 2
-    sigmas = [10, 25, 50, 100, 150, 200, 250]
-
-    kliep = KLIEP(sigmas=sigmas, eta=eta, mu=mu, lambda_=lambda_, converge_iter=10000)
-    kliep.run(y, n_ref, n_test, k=n)
-    plot(kliep)
-    print(kliep.change_points, kliep.sigma)

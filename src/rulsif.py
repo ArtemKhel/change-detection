@@ -1,9 +1,7 @@
 import logging
 
-import matplotlib.pyplot as plt
 import numpy as np
 
-# from src.data_generation import Square_Wave, Saw_Wave, Triangle_Wave, VaryingAmplitudeNoise, Noise
 
 logger = logging.getLogger('asdf')
 
@@ -24,7 +22,6 @@ class RULSIF:
         self.step_ = False
 
     def fit(self, Y_ref, Y_test):
-        n_ref = Y_ref.shape[0]
         n_test = Y_test.shape[0]
 
         # TODO: check indices
@@ -78,7 +75,6 @@ class RULSIF:
     #     pass
 
     def calculate_S(self):
-        # RuLSIF
         return (
             (-self.rulsif_alpha / (2 * self.n_ref)) * sum((self.w_hat(self.Y_ref[i]) ** 2) for i in range(self.n_ref))
             - ((1 - self.rulsif_alpha) / (2 * self.n_test))
@@ -95,7 +91,6 @@ class RULSIF:
             if np.abs(S) > self.mu:
                 self.step_ = True
                 self.s_history.append(np.nan)
-                # self.s_history.append(S)
                 logger.info(f'change at {self.t}')
                 self.change_points.append(self.t)
                 return True
@@ -114,7 +109,7 @@ class RULSIF:
         self.Y = Y
         self.n_ref = n_ref
         self.n_test = n_test
-        self.k = k  # TODO: <--
+        self.k = k
         self.t = 0
         size = n_test + n_ref + k
         self.s_history = [np.nan] * (size)
@@ -125,7 +120,6 @@ class RULSIF:
                 slice_ = Y[self.t : self.t + size]
                 self.t += size
                 M = np.array([slice_[i : i + k, :] for i in range(self.n_ref + self.n_test)])
-                # return slice_[:n_ref], slice_[n_ref:]
                 return M[: self.n_ref], M[self.n_ref : self.n_ref + self.n_test]
             else:
                 self.t += size
@@ -150,62 +144,3 @@ class RULSIF:
 
         loop()
         return self
-
-
-if __name__ == '__main__':
-    # np.random.seed(42)
-
-    def bruteforce_params():
-        lambdas = [0.1 * i for i in range(1, 5)]
-        mus = [0.1**i for i in range(4)] + [0.5 * i**10 for i in range(4)]
-        rulsif_alphas = [0.25 * i for i in range(3)]
-        for lambda_ in lambdas:
-            for rulsif_alpha in rulsif_alphas:
-                for mu in mus:
-                    rulsif = RULSIF(mu=mu, lambda_=lambda_, alpha=rulsif_alpha)
-                    rulsif.run(y, n_ref, n_test, k)
-                    print(rulsif.change_points)
-                    if len(rulsif.change_points) == 5:
-                        print(f'>>> λ = {lambda_}, μ = {mu}, α = {rulsif_alpha}')
-
-    size = (200, 1)
-    y = np.concatenate(
-        (
-            np.random.normal(scale=25, size=size),
-            np.random.normal(scale=5, size=size),
-            np.random.normal(scale=25, size=size),
-            np.random.normal(scale=5, size=size),
-            # np.random.normal(loc=20, scale=5, size=size),
-            # np.random.normal(loc=40, scale=5, size=size),
-            # np.random.normal(loc=20, scale=5, size=size),
-            # np.random.normal(scale=5, size=size),
-        )
-    )
-    # y = np.flip(y)
-
-    n = 40
-    n_ref = n_test = n
-    k = 10
-    lambda_ = 0.1
-    mu = 0.182
-    sigma = 100
-    rulsif_alpha = 0.1
-
-    rulsif = RULSIF(mu=mu, lambda_=lambda_, sigma=sigma)
-    rulsif.rulsif_alpha = rulsif_alpha
-    rulsif.run(y, n_ref, n_test, k)
-    # bruteforce_params()
-    # exit()
-
-    fig, ax = plt.subplots(2, 1, figsize=(12, 8))
-    ax[0].plot(y)
-    ax[1].plot(rulsif.t_list, rulsif.s_history)
-    ax[1].plot(rulsif.t_list, [rulsif.mu] * len(rulsif.t_list), linestyle='dashed', color='m')
-    ax[1].plot(rulsif.t_list, [-rulsif.mu] * len(rulsif.t_list), linestyle='dashed', color='m')
-    ax[1].set_xlim(ax[0].get_xlim())
-    ax[1].vlines(rulsif.change_points, np.nanmin(rulsif.s_history), np.nanmax(rulsif.s_history), color='red')
-    ax[0].vlines(rulsif.change_points, np.nanmin(y), np.nanmax(y), color='red')
-    plt.savefig('/tmp/fig.png')
-    # plt.show()
-
-    print(rulsif.change_points)
