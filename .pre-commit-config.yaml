@@ -8,23 +8,15 @@ repos:
 
   - repo: local
     hooks:
-      - id: black
-        name: Run Black
-        entry: black
-        args: [ '--config', './pyproject.toml', '--check', '.' ]
+      - id: ruff-format
+        name: ruff-format
+        entry: ruff format --force-exclude
         language: python
-        pass_filenames: false
+        types_or: [python, pyi]
 
-      - id: flake8
-        name: Run flake8
-        entry: flake8
-        args: [ '--toml-config', './pyproject.toml' ]
+      - id: ruff
+        name: ruff-lint
+        entry: ruff check --force-exclude
         language: python
-        types: [ python ]
-
-      - id: mypy
-        name: Run MyPy
-        entry: mypy
-        args: [ '--config-file', './pyproject.toml', './src' ]
-        language: python
-        pass_filenames: false
+        types_or: [ python, pyi ]
+        require_serial: true

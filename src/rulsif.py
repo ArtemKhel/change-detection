@@ -1,10 +1,10 @@
 import logging
 
 import numpy as np
+
 from src.cpd_algorithm import CPD_Algorithm
 
-
-logger = logging.getLogger('cpd')
+logger = logging.getLogger(__name__)
 
 
 # noinspection PyPep8Naming,PyAttributeOutsideInit

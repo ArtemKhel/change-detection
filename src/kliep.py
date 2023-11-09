@@ -1,10 +1,10 @@
 import logging
-from src.cpd_algorithm import CPD_Algorithm
 
 import numpy as np
 
+from src.cpd_algorithm import CPD_Algorithm
 
-logger = logging.getLogger('cpd')
+logger = logging.getLogger(__name__)
 
 
 # noinspection PyPep8Naming,PyAttributeOutsideInit
@@ -48,7 +48,9 @@ class KLIEP(CPD_Algorithm):
         else:
             logger.warning('Alpha did not converge')
 
-        w_hat = lambda Y: sum(self.alpha[i] * self.calculate_K_sigma(Y, Y_test[i], sigma) for i in range(n_test))
+        def w_hat(Y):
+            return sum(self.alpha[i] * self.calculate_K_sigma(Y, Y_test[i], sigma) for i in range(n_test))
+
         return w_hat
 
     def _likelihood_cross_validation(self, Y_ref, Y_test):

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-logger = logging.getLogger('cpd')
+logger = logging.getLogger(__name__)
 
 
 # TODO: proper typing
@@ -84,9 +84,8 @@ class CPD_Algorithm(ABC):
                 y = Y[self.t]
                 self.t += 1
                 self.t_list = np.append(self.t_list, self.t)
-                if self.step(y):
-                    if not train():
-                        break
+                if self.step(y) and not train():
+                    break
 
         loop()
         return self
