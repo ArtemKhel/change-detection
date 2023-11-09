@@ -1,18 +1,19 @@
 import logging
+from src.cpd_algorithm import CPD_Algorithm
 
 import numpy as np
 
 
-logger = logging.getLogger('asdf')
+logger = logging.getLogger('cpd')
 
 
 # noinspection PyPep8Naming,PyAttributeOutsideInit
-class KLIEP:
+class KLIEP(CPD_Algorithm):
     # https://sci-hub.ru/10.1002/sam.10124
     # TODO: report changes later than expected, check update()?
 
     def __init__(self, mu, eta, lambda_, converge_iter=1000, epsilon=0.01, sigmas=None):
-        self.mu = mu
+        super().__init__(mu)
         self.eta = eta
         self.lambda_ = lambda_
         self.converge_iter = converge_iter
@@ -21,12 +22,9 @@ class KLIEP:
 
         self.alpha = np.nan
 
-        self.change_points = []
-        self.t = 0
         self.first_run = True
-        self.step_ = False
 
-    def fit(self, Y_ref, Y_test, sigma=None):
+    def _fit(self, Y_ref, Y_test, sigma=None):
         if sigma is None:
             sigma = self.sigma
 
@@ -53,7 +51,7 @@ class KLIEP:
         w_hat = lambda Y: sum(self.alpha[i] * self.calculate_K_sigma(Y, Y_test[i], sigma) for i in range(n_test))
         return w_hat
 
-    def likelihood_cross_validation(self, Y_ref, Y_test):
+    def _likelihood_cross_validation(self, Y_ref, Y_test):
         n_test = Y_test.shape[0]
         R = 4  # TODO: <--
         j_scores = dict()
@@ -63,14 +61,14 @@ class KLIEP:
             j_scores[sigma] = []
             for r, chunk in enumerate(chunks):
                 other_chunks = np.vstack([c for i, c in enumerate(chunks) if i != r])
-                w_hat = self.fit(Y_ref, other_chunks, sigma)
+                w_hat = self._fit(Y_ref, other_chunks, sigma)
                 score = sum(np.log(w_hat(y)) for y in chunk) / chunk_size
                 j_scores[sigma].append(score)
             j_scores[sigma] = np.average(j_scores[sigma])
         sorted_scores = sorted([x for x in j_scores.items() if np.isfinite(x[1])], key=lambda x: x[1], reverse=True)
         self.sigma = sorted_scores[0][0]
         logger.info(f'lcv sigma: {self.sigma}')
-        return self.fit(Y_ref, Y_test)
+        return self._fit(Y_ref, Y_test)
 
     def calculate_K_sigma(self, y, y_, sigma=None):
         if sigma is None:
@@ -117,72 +115,13 @@ class KLIEP:
     def calculate_S(self):
         return sum([np.log(self.w_hat(self.Y_test[i])) for i in range(self.n_test)]) / self.n_test
 
-    def kliep(self):
+    def fit(self):
         if self.first_run:
             self.first_run = False
-            self.w_hat = self.likelihood_cross_validation(self.Y_ref, self.Y_test)
+            self.w_hat = self._likelihood_cross_validation(self.Y_ref, self.Y_test)
         else:
-            self.w_hat = self.fit(self.Y_ref, self.Y_test)
+            self.w_hat = self._fit(self.Y_ref, self.Y_test)
 
-    def step(self, y):
-        if not self.step_:
-            self.update(y)
-            S = self.calculate_S()
 
-            if np.abs(S) > self.mu:
-                self.step_ = True
-                self.s_history.append(np.nan)
-                logger.info(f'change at {self.t}')
-                self.change_points.append(self.t)
-                return True
-
-            else:
-                self.s_history.append(S)
-                return False
-
-        else:
-            self.step_ = False
-            self.s_history.append(np.nan)
-            self.update(y, update_alpha=False)
-        return False
-
-    def run(self, Y, n_ref, n_test, k):
-        self.Y = Y
-        self.n_ref = n_ref
-        self.n_test = n_test
-        self.k = k
-        self.t = 0
-        size = n_test + n_ref + k
-        self.s_history = [np.nan] * (size)
-        self.t_list = np.arange(0, size, 1)
-
-        def take():
-            if Y.shape[0] >= self.t + size:
-                slice_ = Y[self.t : self.t + size]
-                self.t += size
-                # TODO: np.lib.stride_tricks.sliding_window_view ?
-                M = np.array([slice_[i : i + k, :] for i in range(self.n_ref + self.n_test)])
-                return M[: self.n_ref], M[self.n_ref : self.n_ref + self.n_test]
-            else:
-                self.t += size
-                return None
-
-        def train():
-            if (slice_ := take()) is not None:
-                self.Y_ref, self.Y_test = slice_[0], slice_[1]
-                self.kliep()
-                return True
-            return False
-
-        def loop():
-            train()
-            while self.t < Y.shape[0]:
-                y = Y[self.t]
-                self.t += 1
-                self.t_list = np.append(self.t_list, self.t)
-                if self.step(y):
-                    if not train():
-                        break
-
-        loop()
-        return self
+if __name__ == '__main__':
+    k = KLIEP(0, 0, 0)
