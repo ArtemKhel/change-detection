@@ -1,7 +1,7 @@
+import logging
+
 import matplotlib.pyplot as plt
 import numpy as np
-
-import logging
 
 # from src.data_generation import Square_Wave, Saw_Wave, Triangle_Wave, VaryingAmplitudeNoise, Noise
 
@@ -10,7 +10,7 @@ logger = logging.getLogger('asdf')
 
 # noinspection PyPep8Naming,PyAttributeOutsideInit
 class RULSIF:
-    def __init__(self, mu, lambda_, alpha=0., sigma=10):
+    def __init__(self, mu, lambda_, alpha=0.0, sigma=10):
         self.sigma = sigma  # TODO:
         self.rulsif_alpha = alpha
         self.mu = mu
@@ -23,7 +23,6 @@ class RULSIF:
         self.first_run = True
         self.step_ = False
 
-
     def fit(self, Y_ref, Y_test):
         n_ref = Y_ref.shape[0]
         n_test = Y_test.shape[0]
@@ -32,24 +31,27 @@ class RULSIF:
         H = np.array(
             [
                 [
-                    (self.rulsif_alpha / n_test) * sum(
+                    (self.rulsif_alpha / n_test)
+                    * sum(
                         self.calculate_K_sigma(self.Y_ref[j], self.Y_ref[row])
                         * self.calculate_K_sigma(self.Y_ref[j], self.Y_ref[col])
-                        for j in range(n_test)) +
-                    ((1 - self.rulsif_alpha) / n_test) * sum(
+                        for j in range(n_test)
+                    )
+                    + ((1 - self.rulsif_alpha) / n_test)
+                    * sum(
                         self.calculate_K_sigma(self.Y_test[j], self.Y_ref[row])
                         * self.calculate_K_sigma(self.Y_test[j], self.Y_ref[col])
                         for j in range(n_test)
                     )
                     for row in range(n_test)
-                ] for col in range(n_test)
+                ]
+                for col in range(n_test)
             ]
         )
         h = np.array(
             [
-                [
-                    (1 / n_test) * sum(self.calculate_K_sigma(self.Y_ref[i], self.Y_ref[col]) for i in range(n_test))
-                ] for col in range(n_test)
+                [(1 / n_test) * sum(self.calculate_K_sigma(self.Y_ref[i], self.Y_ref[col]) for i in range(n_test))]
+                for col in range(n_test)
             ]
         )
 
@@ -59,12 +61,11 @@ class RULSIF:
             logger.error(e)
         self.w_hat = lambda Y: sum(self.alpha[i] * self.calculate_K_sigma(Y, self.Y_ref[i]) for i in range(n_test))
 
-
     # def loocv(self, Y_ref, Y_test, sigmas, lambdas):  # TODO: loocv
     #     pass
 
     def calculate_K_sigma(self, y, y_):
-        return np.exp(-(np.linalg.norm(y - y_) ** 2) / (2 * self.sigma ** 2))
+        return np.exp(-(np.linalg.norm(y - y_) ** 2) / (2 * self.sigma**2))
 
     def update(self, y, update_alpha=True):
         test_first = self.Y_test[np.newaxis, 0]
@@ -73,23 +74,18 @@ class RULSIF:
         #     self.update_alpha()
         self.Y_ref = np.vstack((self.Y_ref[1:], test_first))
 
-
     # def update_alpha(self): # TODO: <--
     #     pass
-
 
     def calculate_S(self):
         # RuLSIF
         return (
-            (-self.rulsif_alpha / (2 * self.n_ref))
-            * sum((self.w_hat(self.Y_ref[i]) ** 2) for i in range(self.n_ref))
+            (-self.rulsif_alpha / (2 * self.n_ref)) * sum((self.w_hat(self.Y_ref[i]) ** 2) for i in range(self.n_ref))
             - ((1 - self.rulsif_alpha) / (2 * self.n_test))
             * sum(self.w_hat(self.Y_test[i]) ** 2 for i in range(self.n_ref))
-            + (1 / self.n_test)
-            * sum(self.w_hat(self.Y_ref[i]) for i in range(self.n_test))
+            + (1 / self.n_test) * sum(self.w_hat(self.Y_ref[i]) for i in range(self.n_test))
             - 0.5
         )
-
 
     def step(self, y):
         if not self.step_:
@@ -114,7 +110,6 @@ class RULSIF:
             self.update(y, update_alpha=False)
         return False
 
-
     def run(self, Y, n_ref, n_test, k):
         self.Y = Y
         self.n_ref = n_ref
@@ -127,11 +122,11 @@ class RULSIF:
 
         def take():
             if Y.shape[0] >= self.t + size:
-                slice_ = Y[self.t: self.t + size]
+                slice_ = Y[self.t : self.t + size]
                 self.t += size
-                M = np.array([slice_[i:i + k, :] for i in range(self.n_ref + self.n_test)])
+                M = np.array([slice_[i : i + k, :] for i in range(self.n_ref + self.n_test)])
                 # return slice_[:n_ref], slice_[n_ref:]
-                return M[:self.n_ref], M[self.n_ref: self.n_ref + self.n_test]
+                return M[: self.n_ref], M[self.n_ref : self.n_ref + self.n_test]
             else:
                 self.t += size
                 return None
@@ -160,10 +155,9 @@ class RULSIF:
 if __name__ == '__main__':
     # np.random.seed(42)
 
-
     def bruteforce_params():
         lambdas = [0.1 * i for i in range(1, 5)]
-        mus = [0.1 ** i for i in range(4)] + [0.5 * i ** 10 for i in range(4)]
+        mus = [0.1**i for i in range(4)] + [0.5 * i**10 for i in range(4)]
         rulsif_alphas = [0.25 * i for i in range(3)]
         for lambda_ in lambdas:
             for rulsif_alpha in rulsif_alphas:
@@ -174,18 +168,19 @@ if __name__ == '__main__':
                     if len(rulsif.change_points) == 5:
                         print(f'>>> λ = {lambda_}, μ = {mu}, α = {rulsif_alpha}')
 
-
     size = (200, 1)
-    y = np.concatenate((
-        np.random.normal(scale=25, size=size),
-        np.random.normal(scale=5, size=size),
-        np.random.normal(scale=25, size=size),
-        np.random.normal(scale=5, size=size),
-        # np.random.normal(loc=20, scale=5, size=size),
-        # np.random.normal(loc=40, scale=5, size=size),
-        # np.random.normal(loc=20, scale=5, size=size),
-        # np.random.normal(scale=5, size=size),
-    ))
+    y = np.concatenate(
+        (
+            np.random.normal(scale=25, size=size),
+            np.random.normal(scale=5, size=size),
+            np.random.normal(scale=25, size=size),
+            np.random.normal(scale=5, size=size),
+            # np.random.normal(loc=20, scale=5, size=size),
+            # np.random.normal(loc=40, scale=5, size=size),
+            # np.random.normal(loc=20, scale=5, size=size),
+            # np.random.normal(scale=5, size=size),
+        )
+    )
     # y = np.flip(y)
 
     n = 40

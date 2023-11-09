@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "subject-to-change"
+name = "change-detection"
 version = "0.1.0"
 description = ""
 authors = ["ArtemKhel <ArtemKhel@gmail.com>"]
@@ -8,13 +8,42 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
 numpy = "^1.26.1"
+pandas = "^2.1.2"
+scipy = "^1.11.3"
+#sklearn = "^0.0.post10"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+black = "^23.11.0"
+flake8 = "^6.1.0"
+flake8-pyproject = "^1.2.3"
+mypy = "^1.6.1"
+pre-commit = "^3.5.0"
+
+[tool.poetry.group.notebook]
+optional = true
+
+[tool.poetry.group.notebook.dependencies]
 matplotlib = "^3.8.0"
 jupyter = "^1.0.0"
 seaborn = "^0.13.0"
-#scipy = "^1.11.3"
-#sklearn = "^0.0.post10"
-pandas = "^2.1.2"
 
+[tool.black]
+line-length = 120
+skip-string-normalization = true
+
+[tool.flake8]
+ignore = [
+    "E203", # Whitespace before ':'
+    "E704", # Multiple statements on one line 'def f(): pass'
+    "W503", # Line break occurred before a binary operator
+]
+max-line-length = 120
+exclude = ['.venv']
+
+[tool.mypy]
+python_version = "3.11"
+exclude = [".venv"]
 
 [build-system]
 requires = ["poetry-core"]

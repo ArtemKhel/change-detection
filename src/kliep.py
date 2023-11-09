@@ -19,7 +19,7 @@ class KLIEP:
         self.lambda_ = lambda_
         self.converge_iter = converge_iter
         self.epsilon = epsilon
-        self.sigmas = sigmas if sigmas is not None else [2 ** i for i in range(-3, 4)]
+        self.sigmas = sigmas if sigmas is not None else [2**i for i in range(-3, 4)]
 
         self.alpha = np.nan
 
@@ -63,7 +63,7 @@ class KLIEP:
         R = 4  # TODO: <--
         j_scores = dict()
         chunk_size = n_test // R
-        chunks = [Y_test[chunk_size * i:chunk_size * (i + 1)] for i in range(R)]
+        chunks = [Y_test[chunk_size * i : chunk_size * (i + 1)] for i in range(R)]
         for sigma in self.sigmas:
             j_scores[sigma] = []
             for r, chunk in enumerate(chunks):
@@ -80,17 +80,12 @@ class KLIEP:
     def calculate_K_sigma(self, y, y_, sigma=None):
         if sigma is None:
             sigma = self.sigma
-        return np.exp(-(np.linalg.norm(y - y_) ** 2) / (2 * sigma ** 2))
+        return np.exp(-(np.linalg.norm(y - y_) ** 2) / (2 * sigma**2))
 
     def calculate_K(self, Y_test, sigma):
         n_test = Y_test.shape[0]
         return np.array(
-            [
-                [
-                    self.calculate_K_sigma(Y_test[i], Y_test[j], sigma)
-                    for i in range(n_test)
-                ] for j in range(n_test)
-            ]
+            [[self.calculate_K_sigma(Y_test[i], Y_test[j], sigma) for i in range(n_test)] for j in range(n_test)]
         )
 
     def calculate_b(self, Y_ref, Y_test, sigma=None):
@@ -99,12 +94,10 @@ class KLIEP:
         n_ref = Y_ref.shape[0]
         n_test = Y_test.shape[0]
         return (
-            np.array([
-                sum(
-                    [self.calculate_K_sigma(Y_ref[i], Y_test[j], sigma)
-                     for i in range(n_ref)])
-                for j in range(n_test)
-            ]) / n_ref
+            np.array(
+                [sum([self.calculate_K_sigma(Y_ref[i], Y_test[j], sigma) for i in range(n_ref)]) for j in range(n_test)]
+            )
+            / n_ref
         )
 
     def update(self, y, update_alpha=True):
@@ -160,7 +153,6 @@ class KLIEP:
             self.update(y, update_alpha=False)
         return False
 
-
     def run(self, Y, n_ref, n_test, k):
         self.Y = Y
         self.n_ref = n_ref
@@ -173,12 +165,12 @@ class KLIEP:
 
         def take():
             if Y.shape[0] >= self.t + size:
-                slice_ = Y[self.t: self.t + size]
+                slice_ = Y[self.t : self.t + size]
                 self.t += size
                 # TODO: np.lib.stride_tricks.sliding_window_view ?
-                M = np.array([slice_[i:i + k, :] for i in range(self.n_ref + self.n_test)])
+                M = np.array([slice_[i : i + k, :] for i in range(self.n_ref + self.n_test)])
                 # return slice_[:n_ref], slice_[n_ref:]
-                return M[:self.n_ref], M[self.n_ref: self.n_ref + self.n_test]
+                return M[: self.n_ref], M[self.n_ref : self.n_ref + self.n_test]
             else:
                 self.t += size
                 return None
@@ -208,7 +200,6 @@ if __name__ == '__main__':
     # pass
     np.random.seed(42)
 
-
     def plot(k):
         fig, ax = plt.subplots(2, 1, figsize=(10, 6))
         ax[0].plot(k.Y)
@@ -221,25 +212,26 @@ if __name__ == '__main__':
         plt.savefig('/tmp/fig.png')
         # plt.show()  # k.fit(y_ref, y_test, 1)  # k.lcv(y_ref, y_test, [10 ** i for i in range(3)])
 
-
     size = (200, 1)
-    y = np.concatenate((
-        np.random.normal(scale=5, size=size),
-        np.random.normal(scale=25, size=size),
-        np.random.normal(scale=5, size=size),
-        np.random.normal(scale=25, size=size),
-        # np.random.normal(loc=20, scale=5, size=size),
-        # np.random.normal(loc=40, scale=5, size=size),
-        # np.random.normal(loc=20, scale=5, size=size),
-        # np.random.normal(scale=5, size=size),
-    ))
+    y = np.concatenate(
+        (
+            np.random.normal(scale=5, size=size),
+            np.random.normal(scale=25, size=size),
+            np.random.normal(scale=5, size=size),
+            np.random.normal(scale=25, size=size),
+            # np.random.normal(loc=20, scale=5, size=size),
+            # np.random.normal(loc=40, scale=5, size=size),
+            # np.random.normal(loc=20, scale=5, size=size),
+            # np.random.normal(scale=5, size=size),
+        )
+    )
     y = np.flip(y)
 
     n = 20
     n_ref = n_test = n
     k = n
     eta = 0.3
-    lambda_ = .1
+    lambda_ = 0.1
     mu = 2
     sigmas = [10, 25, 50, 100, 150, 200, 250]
 
