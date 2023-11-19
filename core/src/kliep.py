@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 
-from src.cpd_algorithm import CPD_Algorithm
+from core.src.cpd_algorithm import CPD_Algorithm
 
 logger = logging.getLogger(__name__)
 
@@ -53,9 +53,9 @@ class KLIEP(CPD_Algorithm):
 
         return w_hat
 
-    def _likelihood_cross_validation(self, Y_ref, Y_test):
+    def _likelihood_cross_validation(self, Y_ref, Y_test):  # TODO: <--
         n_test = Y_test.shape[0]
-        R = 4  # TODO: <--
+        R = 2  # TODO
         j_scores = dict()
         chunk_size = n_test // R
         chunks = [Y_test[chunk_size * i : chunk_size * (i + 1)] for i in range(R)]
@@ -107,6 +107,7 @@ class KLIEP(CPD_Algorithm):
     def update_alpha(self):
         c = sum([self.alpha[i] * self.calculate_K_sigma(self.Y_test[-1], self.Y_test[i]) for i in range(self.n_test)])
 
+        # TODO: add warning on `c==0 or c==np.inf or c==np.nan`
         self.alpha = np.append(self.alpha[1:] * (1 - self.eta * self.lambda_), self.eta / c)
 
         b = self.calculate_b(self.Y_ref, self.Y_test)

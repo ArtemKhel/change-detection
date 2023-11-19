@@ -2,32 +2,33 @@
 name = "change-detection"
 version = "0.1.0"
 description = ""
+readme = "README.md"
 license = "MIT"
 authors = ["ArtemKhel <ArtemKhel@gmail.com>"]
-readme = "README.md"
+repository = "https://www.github.com/ArtemKhel/change-detection"
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
-numpy = "^1.26.1"
-pandas = "^2.1.2"
-scipy = "^1.11.3"
+change-detection-core = { path = "./core/", develop = true }
+change-detection-datasets = { path = "./datasets", develop = true }
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.4.3"
-ruff = "^0.1.5"
-#black = "^23.11.0"
-#flake8 = "^6.1.0"
-#flake8-pyproject = "^1.2.3"
-mypy = "^1.6.1"
-pre-commit = "^3.5.0"
 
-[tool.poetry.group.notebook]
+[tool.poetry.group.lint]
 optional = true
 
-[tool.poetry.group.notebook.dependencies]
-matplotlib = "^3.8.0"
-jupyter = "^1.0.0"
-seaborn = "^0.13.0"
+[tool.poetry.group.lint.dependencies]
+ruff = "^0.1.5"
+pre-commit = "^3.5.0"
+mypy = "^1.6.1"
+
+#[tool.poetry.group.notebook]
+#optional = true
+#
+#[tool.poetry.group.notebook.dependencies]
+#matplotlib = "^3.8.0"
+#jupyter = "^1.0.0"
+#seaborn = "^0.13.0"
 
 [tool.ruff]
 target-version = "py311"

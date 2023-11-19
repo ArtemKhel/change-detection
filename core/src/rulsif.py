@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 
-from src.cpd_algorithm import CPD_Algorithm
+from core.src.cpd_algorithm import CPD_Algorithm
 
 logger = logging.getLogger(__name__)
 
