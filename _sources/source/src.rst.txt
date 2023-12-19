@@ -1,0 +1,18 @@
+src package
+===========
+
+Subpackages
+-----------
+
+.. toctree::
+
+   src.cpd
+   src.datasets
+
+Module contents
+---------------
+
+.. automodule:: src
+   :members:
+   :undoc-members:
+   :show-inheritance:
