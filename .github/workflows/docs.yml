@@ -45,8 +45,7 @@ jobs:
       - name: Build HTML
         uses: ammaraskar/sphinx-action@master
         with:
-#          build-command: "make --directory docs/ html"
-          build-command: "sphinx-build -b html . build -w /tmp/sphinx-log"
+          build-command: "sphinx-build -b html . build"
           docs-folder: "docs/"
 
       - name: Upload artifacts
