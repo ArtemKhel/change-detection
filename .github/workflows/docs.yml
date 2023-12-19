@@ -42,13 +42,14 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root --with docs
 
-      - name: Run sphinx-apidoc
-        run: |
-          poetry run sphinx-apidoc -f -o docs/source/ ./src
+#      - name: Run sphinx-apidoc
+#        run: |
+#          poetry run sphinx-apidoc -f -o docs/source/ ./src
 
       - name: Build HTML
         uses: ammaraskar/sphinx-action@master
         with:
+          pre-build-command: "poetry run sphinx-apidoc -f -o docs/source/ ./src"
           build-command: "sphinx-build -b html . build"
           docs-folder: "docs/"
 
