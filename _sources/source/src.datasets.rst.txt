@@ -28,7 +28,6 @@ src.datasets.synthetic module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

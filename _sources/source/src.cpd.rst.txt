@@ -28,7 +28,6 @@ src.cpd.rulsif module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 
