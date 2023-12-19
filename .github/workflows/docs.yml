@@ -46,12 +46,17 @@ jobs:
         run: |
           poetry run sphinx-apidoc -f -o docs/source/ ./src
 
-      - name: Build HTML
-        uses: ammaraskar/sphinx-action@master
-        with:
-#          pre-build-command: "sphinx-apidoc -f -o docs/source/ ./src"
-          build-command: "sphinx-build -b html . build"
-          docs-folder: "docs/"
+      - name: Run sphinx-build
+        working-directory: ./docs
+        run: |
+          poetry run sphinx-build -b html . build
+
+      #      - name: Build HTML
+      #        uses: ammaraskar/sphinx-action@master
+      #        with:
+      ##          pre-build-command: "sphinx-apidoc -f -o docs/source/ ./src"
+      #          build-command: "sphinx-build -b html . build"
+      #          docs-folder: "docs/"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
