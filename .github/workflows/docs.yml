@@ -49,7 +49,7 @@ jobs:
       - name: Build HTML
         uses: ammaraskar/sphinx-action@master
         with:
-          pre-build-command: "sphinx-apidoc -f -o source/ ./src"
+          pre-build-command: "sphinx-apidoc -f -o docs/source/ ./src"
           build-command: "sphinx-build -b html . build"
           docs-folder: "docs/"
 
