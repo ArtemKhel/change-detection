@@ -4,7 +4,13 @@ on: push
 
 jobs:
   sphinx:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ 3.11 ]
+
     permissions:
       contents: write
     steps:
