@@ -1,0 +1,37 @@
+src.cpd package
+===============
+
+Submodules
+----------
+
+src.cpd.cpd\_algorithm module
+-----------------------------
+
+.. automodule:: src.cpd.cpd_algorithm
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.cpd.kliep module
+--------------------
+
+.. automodule:: src.cpd.kliep
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+src.cpd.rulsif module
+---------------------
+
+.. automodule:: src.cpd.rulsif
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: src.cpd
+   :members:
+   :undoc-members:
+   :show-inheritance:
