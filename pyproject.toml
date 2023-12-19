@@ -20,6 +20,7 @@ pytest = "^7.4.3"
 sphinx = "^7.2.6"
 pydata-sphinx-theme = "^0.14.4"
 python-docs-theme = "^2023.9"
+sphinx-autodoc-typehints = "^1.25.2"
 
 [tool.poetry.group.lint]
 optional = true

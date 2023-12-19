@@ -16,7 +16,15 @@ class KLIEP(CPD_Algorithm):
     https://sci-hub.ru/10.1002/sam.10124
     """
 
-    def __init__(self, mu, eta, lambda_, converge_iter=1000, epsilon=0.01, sigmas=None):
+    def __init__(
+        self,
+        mu: float,
+        eta: float,
+        lambda_: float,
+        converge_iter: int = 1000,
+        epsilon: float = 0.01,
+        sigmas: list[int] | None = None,
+    ):
         """
         :param mu: 🐮
         :param eta:

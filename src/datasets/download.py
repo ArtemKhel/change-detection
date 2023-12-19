@@ -40,9 +40,9 @@ def parse(path: Path) -> tuple[np.array, dict[int, str]]:
 
 
 def load_dataset(name: str) -> tuple[np.array, dict[int, str]]:
-    """
-    Download dataset
+    """Download dataset
     :param name: name of the dataset
-    :return:
+    :return: tuple with `np.array` containing specified dataset and a dict with dataset comments
     """
+    # TODO: sphinx dont render it properly
     return parse(download(name))
