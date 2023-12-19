@@ -2151,6 +2151,17 @@ files = [
 six = ">=1.5"
 
 [[package]]
+name = "python-docs-theme"
+version = "2023.9"
+description = "The Sphinx theme for the CPython docs and related projects"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "python_docs_theme-2023.9-py3-none-any.whl", hash = "sha256:72c667fa6fcc8f98603dec872e106c27efa575e76f70ddcbed0170eef7999816"},
+    {file = "python_docs_theme-2023.9.tar.gz", hash = "sha256:64316dcd4f70f67f897ba15da8ee8e1b47e8dd666fead5def480c83acbd1ad6e"},
+]
+
+[[package]]
 name = "python-json-logger"
 version = "2.0.7"
 description = "A python library adding a json log formatter"
@@ -3119,4 +3130,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "29d6ccba5db99d5360aca86dab9091a0888a8ceff3c07f7734af90f3760c8715"
+content-hash = "a5aad14968c6890ce2bea20610d10b41ae435e41b019f59571845d39913aa62d"
