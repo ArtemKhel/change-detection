@@ -46,7 +46,7 @@ jobs:
         uses: ammaraskar/sphinx-action@master
         with:
           build-command: |
-            sphinx-apidoc -f -o source/ ../src
+            sphinx-apidoc -f -o source/ ../src &&
             sphinx-build -b html . build
           docs-folder: "docs/"
 
