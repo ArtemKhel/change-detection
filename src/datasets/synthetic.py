@@ -1,5 +1,4 @@
 import numpy as np
-from numpy.random import exponential, normal, poisson, uniform
 
 DSIZE = (100, 1)
 
@@ -7,26 +6,22 @@ DSIZE = (100, 1)
 def generate_data(dsize=DSIZE):
     return {  # TODO: size change / mean change for same ds?
         'normal': [
-            normal(loc=0, scale=1, size=dsize),
-            normal(loc=0, scale=5, size=dsize),
+            np.random.normal(loc=0, scale=1, size=dsize),
+            np.random.normal(loc=0, scale=5, size=dsize),
             # normal(loc=5, scale=1, size=dsize),
         ],
         'uniform': [
-            uniform(low=-1, high=1, size=dsize),
-            uniform(low=-5, high=5, size=dsize),
+            np.random.uniform(low=-1, high=1, size=dsize),
+            np.random.uniform(low=-5, high=5, size=dsize),
         ],
         'poisson': [
-            poisson(lam=1, size=dsize),
-            poisson(lam=5, size=dsize),
+            np.random.poisson(lam=1, size=dsize),
+            np.random.poisson(lam=5, size=dsize),
         ],
         'exp': [
-            exponential(scale=5, size=dsize),
-            exponential(scale=10, size=dsize),
+            np.random.exponential(scale=5, size=dsize),
+            np.random.exponential(scale=10, size=dsize),
         ],
-        # 'cauchy': [
-        #     standard_cauchy(size=dsize),
-        #     standard_cauchy(size=dsize) * 5,
-        # ],
     }
 
 

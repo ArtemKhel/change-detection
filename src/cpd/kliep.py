@@ -2,17 +2,29 @@ import logging
 
 import numpy as np
 
-from core.src.cpd_algorithm import CPD_Algorithm
+from src.cpd.cpd_algorithm import CPD_Algorithm
+
+# from core.src.cpd_algorithm import CPD_Algorithm
 
 logger = logging.getLogger(__name__)
 
 
 # noinspection PyPep8Naming,PyAttributeOutsideInit
 class KLIEP(CPD_Algorithm):
-    # https://sci-hub.ru/10.1002/sam.10124
-    # TODO: report changes later than expected, check update()?
+    """
+    Test doc
+    https://sci-hub.ru/10.1002/sam.10124
+    """
 
     def __init__(self, mu, eta, lambda_, converge_iter=1000, epsilon=0.01, sigmas=None):
+        """
+        :param mu: 🐮
+        :param eta:
+        :param lambda_:
+        :param converge_iter:
+        :param epsilon:
+        :param sigmas:
+        """
         super().__init__(mu)
         self.eta = eta
         self.lambda_ = lambda_
@@ -119,7 +131,8 @@ class KLIEP(CPD_Algorithm):
         return sum([np.log(self.w_hat(self.Y_test[i])) for i in range(self.n_test)]) / self.n_test
 
     def fit(self):
-        if self.first_run:
+        if self.first_run:  # and False:
+            # if self.first_run and False:
             self.first_run = False
             self.w_hat = self._likelihood_cross_validation(self.Y_ref, self.Y_test)
         else:

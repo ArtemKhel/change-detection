@@ -148,3 +148,6 @@ _minted-presentation/
 # Ignore files prefixed with _
 _[^_]*
 .direnv/
+/data/
+/raw_data/
+/raw_raw_data/
