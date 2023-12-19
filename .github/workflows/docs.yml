@@ -45,14 +45,16 @@ jobs:
       - name: Build HTML
         uses: ammaraskar/sphinx-action@master
         with:
-          build-command: "sphinx-build -b html . build"
+          build-command: |
+            sphinx-apidoc -f -o source/ ../src
+            sphinx-build -b html . build
           docs-folder: "docs/"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: html-docs
-          path: build/html/
+          path: docs/build/
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
