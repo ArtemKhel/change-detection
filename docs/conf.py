@@ -32,7 +32,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-# html_theme = 'python-docs-theme'
+# html_theme = 'python_docs_theme'
 html_static_path = ['_static']
 
 # The default options for autodoc directives.

@@ -5,6 +5,7 @@ on: push
 jobs:
   sphinx:
     runs-on: ${{ matrix.os }}
+    needs: [lint, test]
 
     strategy:
       matrix:
